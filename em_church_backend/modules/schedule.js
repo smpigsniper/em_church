@@ -37,7 +37,7 @@ schedules.getSchedule = function (req, res, callback) {
     let data = {
         "date": date
     }
-    db.getValue("schedules", "*", data, "id", (err, result) => {
+    db.getValue("vuSchedules", "*", data, "id", (err, result) => {
         if (err) {
             jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
             return;
@@ -80,7 +80,7 @@ schedules.editSchedule = function (req, res, callback) {
             });
         },
         function (next) {
-            db.getValue("schedules", "*", data, "id", (err, result) => {
+            db.getValue("vuSchedules", "*", data, "id", (err, result) => {
                 if (err) {
                     jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
                     return;
@@ -123,7 +123,7 @@ schedules.deleteSchedule = function (req, res, callback) {
             });
         },
         function (next) {
-            db.getValue("schedules", data, (err, result) => {
+            db.getValue("vuSchedules", data, (err, result) => {
                 if (err) {
                     jsonResonse.sendResonse(res, 0, err, null);
                     return;

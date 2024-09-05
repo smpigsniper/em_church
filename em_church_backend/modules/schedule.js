@@ -37,12 +37,12 @@ schedules.getSchedule = function (req, res, callback) {
     let data = {
         "date": date
     }
-    db.getValue("vuSchedules", "*", data, "id", (err, result) => {
+    getSchedule("*", data, "id", (err, result) => {
         if (err) {
-            jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
+            jsonResonse(res, 0, err.sqlMessage, null);
             return;
         } else {
-            jsonResonse.sendResonse(res, 1, null, result);
+            jsonResonse(res, 1, null, result);
             return;
         }
     });
@@ -80,9 +80,9 @@ schedules.editSchedule = function (req, res, callback) {
             });
         },
         function (next) {
-            db.getValue("vuSchedules", "*", data, "id", (err, result) => {
+            getSchedule("*", data, "id", (err, result) => {
                 if (err) {
-                    jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
+                    jsonResonse(res, 0, err.sqlMessage, null);
                     return;
                 } else {
                     responseData = result;
@@ -123,12 +123,13 @@ schedules.deleteSchedule = function (req, res, callback) {
             });
         },
         function (next) {
-            db.getValue("vuSchedules", data, (err, result) => {
+            getSchedule("*", data, "id", (err, result) => {
                 if (err) {
-                    jsonResonse.sendResonse(res, 0, err, null);
+                    jsonResonse(res, 0, err.sqlMessage, null);
                     return;
                 } else {
                     responseData = result;
+                    next(null);
                 }
             });
         }
@@ -139,6 +140,16 @@ schedules.deleteSchedule = function (req, res, callback) {
         } else {
             jsonResonse.sendResonse(res, 1, null, responseData);
             return;
+        }
+    });
+}
+
+function getSchedule(field, criteria, orderBy, callback) {
+    db.getValue("vuSchedules", field, criteria, orderBy, (err, result) => {
+        if (err) {
+            callback(err.sqlMessage);
+        } else {
+            callback(null, result);
         }
     });
 }

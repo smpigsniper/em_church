@@ -56,6 +56,7 @@ class ResponseLoginModelData {
     required this.is_admin,
     required this.accessToken,
   });
+
   factory ResponseLoginModelData.fromJson(Map<String, dynamic> json) {
     return ResponseLoginModelData(
       id: json['id'] as int? ?? 0,

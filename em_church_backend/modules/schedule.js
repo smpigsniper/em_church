@@ -1,6 +1,5 @@
 let async = require('async');
 let db = require('../config/db');
-let jwt = require('../config/jwt');
 let jsonResonse = require('./jsonResonse');
 let schedules = {};
 
@@ -39,10 +38,11 @@ schedules.getSchedule = function (req, res, callback) {
     }
     getSchedule("*", data, "id", (err, result) => {
         if (err) {
-            jsonResonse(res, 0, err.sqlMessage, null);
+            console.log('cp1: ', err)
+            jsonResonse.sendResonse(res, 0, err, null);
             return;
         } else {
-            jsonResonse(res, 1, null, result);
+            jsonResonse.sendResonse(res, 1, null, result);
             return;
         }
     });
@@ -82,7 +82,7 @@ schedules.editSchedule = function (req, res, callback) {
         function (next) {
             getSchedule("*", data, "id", (err, result) => {
                 if (err) {
-                    jsonResonse(res, 0, err.sqlMessage, null);
+                    jsonResonse.sendResonse(res, 0, err, null);
                     return;
                 } else {
                     responseData = result;
@@ -125,7 +125,7 @@ schedules.deleteSchedule = function (req, res, callback) {
         function (next) {
             getSchedule("*", data, "id", (err, result) => {
                 if (err) {
-                    jsonResonse(res, 0, err.sqlMessage, null);
+                    jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
                     return;
                 } else {
                     responseData = result;

@@ -23,7 +23,7 @@ user.register = async function (req, res, next) {
     }
     db.insert("users", data, (err, result) => {
         if (err) {
-            jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
+            jsonResonse.sendResonse(res, 0, err, null);
             return;
         } else {
             jsonResonse.sendResonse(res, 1, null, null);
@@ -40,7 +40,7 @@ user.login = function (req, res, next) {
     }
     db.getValue("users", "*", data, null, async (err, result) => {
         if (err) {
-            jsonResonse.sendResonse(res, 0, err.sqlMessage, null);
+            jsonResonse.sendResonse(res, 0, err, null);
             return;
         } else {
             if (result.length > 0) {
@@ -73,7 +73,7 @@ user.refreshToken = function (req, res, callback) {
         jsonResonse.sendResonse(res, 1, null, { "email": req.body.email, "accessToken": token });
         return
     } catch (err) {
-        jsonResonse.sendResonse(res, 0, err.message, null);
+        jsonResonse.sendResonse(res, 0, err, null);
         return;
     }
 }

@@ -15,10 +15,10 @@ class LoginBlocs extends Bloc<LoginEvent, LoginStates> {
         emit(LoginLoading());
         responseData = await data.loginData(event.data);
         if (responseData.status == 1) {
-          _secureStorage.write(key: "email", value: responseData.data['email']);
-          _secureStorage.write(key: "accessToken", value: responseData.data['accessToken']);
-          _secureStorage.write(key: "id", value: responseData.data['id']);
-          _secureStorage.write(key: "is_admin", value: responseData.data['is_admin']);
+          _secureStorage.write(key: "email", value: responseData.data.email);
+          _secureStorage.write(key: "accessToken", value: responseData.data.accessToken);
+          _secureStorage.write(key: "id", value: responseData.data.id.toString());
+          _secureStorage.write(key: "is_admin", value: responseData.data.is_admin.toString());
         }
         emit(LoginLoaded(responseData));
       }

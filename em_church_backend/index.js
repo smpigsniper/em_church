@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRouter = require('./router/user');
 const scheduleRouter = require('./router/schedule');
+const lastestNewsRouter = require('./router/latest_news');
 const dotenv = require('dotenv');
 
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json()); // Built-in middleware for JSON bodies
 // Routes
 app.use('/api/users', userRouter);
 app.use('/api/schedule', scheduleRouter);
+app.use('/api/lastest_news', lastestNewsRouter);
 
 // Catch 404 errors and forward to error handler
 app.use((req, res, next) => {

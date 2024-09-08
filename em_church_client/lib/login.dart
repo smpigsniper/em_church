@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:em_church_client/widget/error_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,6 +28,8 @@ class _LogingState extends State<Loging> {
   late String _email = "";
   late String _accessToken = "";
 
+  ErrorDialog errorDialog = const ErrorDialog();
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -47,28 +50,8 @@ class _LogingState extends State<Loging> {
         _refreshToken(_email);
       }
     } catch (e) {
-      _showErrorDialog();
+      errorDialog;
     }
-  }
-
-  void _showErrorDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Connection Problem'),
-          content: const Text('There was an error loading the data. Please try again later.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   Future<void> _refreshToken(String email) async {

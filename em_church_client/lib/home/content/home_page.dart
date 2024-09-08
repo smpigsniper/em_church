@@ -43,8 +43,7 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons
-                  .announcement), // Example icon, replace with your content
+              const Icon(Icons.announcement), // Example icon, replace with your content
               const SizedBox(height: 8),
               Text(
                 'Latest News',
@@ -85,8 +84,7 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
-                    Icons.schedule), // Example icon, replace with your content
+                const Icon(Icons.schedule), // Example icon, replace with your content
                 const SizedBox(height: 8),
                 Text(
                   'Schedule',
@@ -139,7 +137,7 @@ class _HomePageState extends State<HomePage> {
   void _gotoSchedules() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const Schedules(),
+        builder: (context) => const Schedules(), // Ensure any dependencies are provided
       ),
     );
   }

@@ -1,26 +1,31 @@
 class ResponseSchedulesModel {
   final int status;
   final String reason;
-  final ResponseSchedulesModelData data;
+  final List<ResponseSchedulesModelData> data;
 
   ResponseSchedulesModel({
-    required this.status,
-    required this.reason,
-    required this.data,
-  });
+    this.status = 0,
+    this.reason = '',
+    List<ResponseSchedulesModelData>? data,
+  }) : data = data ?? [];
 
   factory ResponseSchedulesModel.fromJson(Map<String, dynamic> json) {
     return ResponseSchedulesModel(
       status: json['status'] as int? ?? 0,
       reason: json['reason'] as String? ?? '',
-      data: json['data'] ?? {},
+      data: (json['data'] as List<dynamic>?)
+              ?.map(
+                (item) => ResponseSchedulesModelData.fromJson(item as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
     );
   }
 
   Map<String, dynamic> toJson() => {
         'status': status,
         'reason': reason,
-        'data': data,
+        'data': data.map((item) => item.toJson()).toList(),
       };
 }
 
@@ -41,7 +46,7 @@ class ResponseSchedulesModel {
 
 class ResponseSchedulesModelData {
   final int id;
-  final DateTime date;
+  final String date;
   final String title;
   final String description;
   final int charge;
@@ -60,7 +65,7 @@ class ResponseSchedulesModelData {
   factory ResponseSchedulesModelData.fromJson(Map<String, dynamic> json) {
     return ResponseSchedulesModelData(
       id: json['id'] as int? ?? 0,
-      date: json['date'] as DateTime? ?? DateTime.now(),
+      date: json['date'] as String? ?? '',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
       charge: json['charge'] as int? ?? 0,

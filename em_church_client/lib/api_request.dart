@@ -4,7 +4,10 @@ class ApiRequest {
   static Future<String> getRequest(String url, String token) async {
     String response = "";
     try {
-      final responseData = await http.get(Uri.parse(url), headers: addHeader(token));
+      final responseData = await http.get(
+        Uri.parse(url),
+        headers: addHeader(token),
+      );
       if (responseData.statusCode == 200) {
         response = responseData.body;
       }
@@ -37,7 +40,7 @@ class ApiRequest {
   static Map<String, String> addHeader(String token) {
     return {
       'Accept': 'application/json',
-      "Authorization": token.isNotEmpty ? 'Bearer $token' : '',
+      'x-access-token': token.isNotEmpty ? token : '',
     };
   }
 }

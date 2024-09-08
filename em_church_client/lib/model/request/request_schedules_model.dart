@@ -1,5 +1,5 @@
 class RequestSchedulesModel {
-  final DateTime date;
+  final String date;
 
   RequestSchedulesModel({
     required this.date,

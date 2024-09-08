@@ -1,5 +1,14 @@
+import 'dart:convert';
+
+import 'package:em_church_client/api_request.dart';
+import 'package:em_church_client/global_variable.dart';
+import 'package:em_church_client/model/request/request_schedules_model.dart';
+import 'package:em_church_client/model/response/response_schedules_model.dart';
 import 'package:em_church_client/style/color.dart';
 import 'package:em_church_client/style/font.dart';
+import 'package:em_church_client/widget/error_dialog.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:flutter/material.dart';
 
@@ -11,11 +20,46 @@ class Schedules extends StatefulWidget {
 }
 
 class _SchedulesState extends State<Schedules> {
+  String accessToken = "";
+  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   CustColors custColors = CustColors();
   CustFont custFont = CustFont();
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime.now();
+  ErrorDialog errorDialog = const ErrorDialog();
+  ResponseSchedulesModel responseSchedules = ResponseSchedulesModel();
+  List<ResponseSchedulesModelData> dataList = [];
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      accessToken = (await _secureStorage.read(key: 'accessToken'))!;
+      final requestSchedulesModel = RequestSchedulesModel(
+        date: DateFormat('yyyy-MM-dd').format(_selectedDay).toString(),
+      );
+      String response = await ApiRequest.postRequest(
+        "${GlobalVariable.apiIP}api/schedule/getSchedule",
+        accessToken,
+        requestSchedulesModel.toJson(),
+      );
+      responseSchedules = ResponseSchedulesModel.fromJson(
+        jsonDecode(response),
+      );
+      setState(() {
+        dataList = [];
+        dataList = responseSchedules.data;
+      });
+    } catch (e) {
+      errorDialog;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +102,7 @@ class _SchedulesState extends State<Schedules> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
             // Here to do load event
-            print(_selectedDay);
+            _loadData();
           });
         }
       },
@@ -71,39 +115,40 @@ class _SchedulesState extends State<Schedules> {
   Widget _eventList() {
     return Expanded(
       child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: 5,
-          itemBuilder: (context, index) {
-            return SizedBox(
-              height: 120,
-              child: Card(
-                elevation: 5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Event Title",
-                        style: custFont.title[0],
-                      ),
+        shrinkWrap: true,
+        itemCount: dataList.length,
+        itemBuilder: (context, index) {
+          return SizedBox(
+            height: 120,
+            child: Card(
+              elevation: 5,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      dataList[index].title,
+                      style: custFont.title[0],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        "Detail",
-                        style: custFont.subTitle[0],
-                      ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      dataList[index].description,
+                      style: custFont.subTitle[0],
                     ),
-                    const SizedBox(
-                      height: 2,
-                    ),
-                    _inCharge("Pang Tang"),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  _inCharge(dataList[index].prefer_name),
+                ],
               ),
-            );
-          }),
+            ),
+          );
+        },
+      ),
     );
   }
 

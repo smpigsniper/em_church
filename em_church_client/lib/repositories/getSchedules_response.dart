@@ -14,7 +14,7 @@ class GetschedulesResponse extends GetSchedulesRepository {
   Future<ResponseSchedulesModel> schedulesData(RequestSchedulesModel requestData, String token) async {
     try {
       String responseData = await ApiRequest.postRequest(
-        "${GlobalVariable.apiIP}/api/schedule/getSchedule",
+        "${GlobalVariable.apiIP}api/schedule/getSchedule",
         token,
         requestData.toJson(),
       );

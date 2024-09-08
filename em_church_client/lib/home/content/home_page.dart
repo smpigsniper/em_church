@@ -1,7 +1,10 @@
+import 'package:em_church_client/blocs/schedules/schedules_blocs.dart';
 import 'package:em_church_client/home/content/schedules.dart';
 import 'package:em_church_client/home/content/latest_news.dart';
+import 'package:em_church_client/repositories/getSchedules_response.dart';
 import 'package:em_church_client/style/font.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,7 +15,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   CustFont custFont = CustFont();
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -135,9 +137,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _gotoSchedules() {
+    GetScheduleBlocs getScheduleBlocs = GetScheduleBlocs(GetschedulesResponse());
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const Schedules(), // Ensure any dependencies are provided
+        builder: (context) => BlocProvider<GetScheduleBlocs>.value(
+          value: getScheduleBlocs,
+          child: const Schedules(),
+        ),
       ),
     );
   }

@@ -1,12 +1,13 @@
-import 'dart:convert';
-
-import 'package:em_church_client/api_request.dart';
-import 'package:em_church_client/global_variable.dart';
+import 'package:em_church_client/blocs/schedules/schedules_blocs.dart';
+import 'package:em_church_client/blocs/schedules/schedules_events.dart';
+import 'package:em_church_client/blocs/schedules/schedules_states.dart';
 import 'package:em_church_client/model/request/request_schedules_model.dart';
 import 'package:em_church_client/model/response/response_schedules_model.dart';
+import 'package:em_church_client/repositories/getSchedules_response.dart';
 import 'package:em_church_client/style/color.dart';
 import 'package:em_church_client/style/font.dart';
 import 'package:em_church_client/widget/error_dialog.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -21,6 +22,7 @@ class Schedules extends StatefulWidget {
 
 class _SchedulesState extends State<Schedules> {
   String accessToken = "";
+  final GetschedulesResponse getResponseSchedules = GetschedulesResponse();
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   CustColors custColors = CustColors();
   CustFont custFont = CustFont();
@@ -43,18 +45,8 @@ class _SchedulesState extends State<Schedules> {
       final requestSchedulesModel = RequestSchedulesModel(
         date: DateFormat('yyyy-MM-dd').format(_selectedDay).toString(),
       );
-      String response = await ApiRequest.postRequest(
-        "${GlobalVariable.apiIP}api/schedule/getSchedule",
-        accessToken,
-        requestSchedulesModel.toJson(),
-      );
-      responseSchedules = ResponseSchedulesModel.fromJson(
-        jsonDecode(response),
-      );
-      setState(() {
-        dataList = [];
-        dataList = responseSchedules.data;
-      });
+      // ignore: use_build_context_synchronously
+      BlocProvider.of<GetScheduleBlocs>(context).add(GetSchedules(requestSchedulesModel, accessToken));
     } catch (e) {
       errorDialog;
     }
@@ -66,15 +58,24 @@ class _SchedulesState extends State<Schedules> {
       appBar: AppBar(
         title: const Text("Schedules"),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              _calendar(),
-              _eventList(),
-            ],
-          ),
+      body: BlocConsumer<GetScheduleBlocs, SchedulesStates>(
+        listener: (context, state) {},
+        builder: (context, state) {
+          return _bodyWidget(state);
+        },
+      ),
+    );
+  }
+
+  Widget _bodyWidget(SchedulesStates state) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            _calendar(),
+            _eventList(state),
+          ],
         ),
       ),
     );
@@ -112,7 +113,24 @@ class _SchedulesState extends State<Schedules> {
     );
   }
 
-  Widget _eventList() {
+  Widget _eventList(SchedulesStates state) {
+    if (state is SchedulesLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else if (state is SchedulesError) {
+      return const Center(
+        child: Text("Fail Load Data!"),
+      );
+    } else if (state is SchedulesLoaded) {
+      dataList = state.data.data;
+      return _eventListView();
+    } else {
+      return Container();
+    }
+  }
+
+  Widget _eventListView() {
     return Expanded(
       child: ListView.builder(
         shrinkWrap: true,

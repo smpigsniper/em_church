@@ -59,7 +59,11 @@ class _SchedulesState extends State<Schedules> {
         title: const Text("Schedules"),
       ),
       body: BlocConsumer<GetScheduleBlocs, SchedulesStates>(
-        listener: (context, state) {},
+        listener: (context, state) {
+          if (state is SchedulesError) {
+            errorDialog;
+          }
+        },
         builder: (context, state) {
           return _bodyWidget(state);
         },
